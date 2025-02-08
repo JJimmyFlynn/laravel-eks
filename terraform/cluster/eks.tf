@@ -12,7 +12,7 @@ resource "aws_eks_cluster" "default" {
   vpc_config {
     endpoint_private_access = true
     endpoint_public_access = true
-    subnet_ids = aws_subnet.private.*.id
+    subnet_ids = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
   }
 
   # Ensure that IAM Role permissions are created before and deleted

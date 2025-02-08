@@ -7,7 +7,3 @@ variable "role_arn" {
   type        = string
   description = "ARN of the role for terraform to assume"
 }
-
-variable "admin_arn" {
-  type = string
-}

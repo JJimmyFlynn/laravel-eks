@@ -82,3 +82,41 @@ resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
   policy_arn = aws_iam_policy.alb_policy.arn
   role       = aws_iam_role.alb_controller_role.name
 }
+
+# AWS Secrets Provider
+resource "aws_iam_role" "secrets_provider" {
+  name = "EKSSecretsProviderRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = ["sts:AssumeRoleWithWebIdentity"]
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.default.arn
+        },
+      },
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "get_sss_parameters_by_path" {
+  statement {
+    sid     = "AllowAccessToEnvironmentParameters"
+    actions = ["ssm:GetParametersByPath"]
+    effect  = "Allow"
+
+    resources = ["arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.parameter_store_path}"]
+  }
+}
+
+resource "aws_iam_policy" "allow_get_ssm_env_params" {
+  name   = "GetSSMEnvironmentParams"
+  policy = data.aws_iam_policy_document.get_sss_parameters_by_path.json
+}
+
+resource "aws_iam_role_policy_attachment" "secrets_provider_get_ssm_params" {
+  policy_arn = aws_iam_policy.allow_get_ssm_env_params.arn
+  role       = aws_iam_role.secrets_provider.name
+}
