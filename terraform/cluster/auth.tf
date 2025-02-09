@@ -6,7 +6,7 @@ resource "aws_eks_access_entry" "laravel-eks-admin" {
   type              = "STANDARD"
 }
 
-resource "aws_eks_access_policy_association" "laravel-eks-admin-policy-binding" {
+resource "aws_eks_access_policy_association" "laravel-k8s-admin-policy-binding" {
   cluster_name  = aws_eks_cluster.default.name
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
   principal_arn = var.admin_arn
