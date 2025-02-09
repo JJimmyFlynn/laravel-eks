@@ -7,6 +7,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   name            = "aws-elb-controller"
   repository      = "https://aws.github.io/eks-charts"
   chart           = "aws-load-balancer-controller"
+  namespace       = "kube-system"
   cleanup_on_fail = true
 
   depends_on = [helm_release.cluster_init]
