@@ -1,18 +1,18 @@
 resource "aws_eks_cluster" "default" {
-  name     = "laravel-k8s"
-  role_arn = aws_iam_role.cluster.arn
+  name                          = "laravel-k8s"
+  role_arn                      = aws_iam_role.cluster.arn
   bootstrap_self_managed_addons = true
-  version = "1.32"
+  version                       = "1.32"
 
   access_config {
-    authentication_mode = "API"
+    authentication_mode                         = "API"
     bootstrap_cluster_creator_admin_permissions = true
   }
 
   vpc_config {
     endpoint_private_access = true
-    endpoint_public_access = true
-    subnet_ids = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
+    endpoint_public_access  = true
+    subnet_ids              = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
   }
 
   # Ensure that IAM Role permissions are created before and deleted
@@ -25,10 +25,10 @@ resource "aws_eks_cluster" "default" {
 
 resource "aws_eks_node_group" "app" {
   node_group_name = "node-group-1"
-  cluster_name  = aws_eks_cluster.default.name
-  node_role_arn = aws_iam_role.node_group.arn
-  subnet_ids = aws_subnet.private.*.id
-  instance_types = ["t3.small"]
+  cluster_name    = aws_eks_cluster.default.name
+  node_role_arn   = aws_iam_role.node_group.arn
+  subnet_ids      = aws_subnet.private.*.id
+  instance_types  = ["t3.small"]
 
   scaling_config {
     desired_size = 2

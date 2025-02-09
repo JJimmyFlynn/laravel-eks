@@ -74,7 +74,7 @@ resource "aws_iam_role" "alb_controller_role" {
 }
 
 resource "aws_iam_policy" "alb_policy" {
-  name = "AWSLoadBalancerControllerIAMPolicy"
+  name   = "AWSLoadBalancerControllerIAMPolicy"
   policy = file("./alb_iam_policy.json") // recommended by AWS
 }
 

@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket       = "flynn-tfstate-php-infra-poc"
-    key          = "laravel-k8s/cluster-init"
-    region       = "us-east-1"
+    bucket         = "flynn-tfstate-php-infra-poc"
+    key            = "laravel-k8s/cluster-init"
+    region         = "us-east-1"
     dynamodb_table = "php-infra-state-lock"
   }
 
@@ -30,15 +30,15 @@ provider "aws" {
 data "terraform_remote_state" "cluster" {
   backend = "s3"
   config = {
-    bucket       = "flynn-tfstate-php-infra-poc"
-    key          = "laravel-k8s"
-    region       = "us-east-1"
+    bucket = "flynn-tfstate-php-infra-poc"
+    key    = "laravel-k8s"
+    region = "us-east-1"
   }
 }
 
 provider "helm" {
   kubernetes {
-    host = data.terraform_remote_state.cluster.outputs.cluster_endpoint
+    host                   = data.terraform_remote_state.cluster.outputs.cluster_endpoint
     cluster_ca_certificate = base64decode(data.terraform_remote_state.cluster.outputs.eks_cluster_ca_certificate)
 
     exec {
@@ -55,9 +55,9 @@ resource "helm_release" "cluster_init" {
 }
 
 resource "helm_release" "aws_load_balancer_controller" {
-  name  = "aws-elb-controller"
-  repository = "https://aws.github.io/eks-charts"
-  chart = "aws-load-balancer-controller"
+  name            = "aws-elb-controller"
+  repository      = "https://aws.github.io/eks-charts"
+  chart           = "aws-load-balancer-controller"
   cleanup_on_fail = true
 
   depends_on = [helm_release.cluster_init]
@@ -94,17 +94,19 @@ resource "helm_release" "aws_load_balancer_controller" {
 }
 
 resource "helm_release" "secrets_store_csi_driver" {
-  name  = "csi-secrets-store"
-  repository = "https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts"
-  chart = "secrets-store-csi-driver"
-  namespace = "kube-system"
-  depends_on = [helm_release.cluster_init]
+  name            = "csi-secrets-store"
+  repository      = "https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts"
+  chart           = "secrets-store-csi-driver"
+  namespace       = "kube-system"
+  cleanup_on_fail = true
+  depends_on      = [helm_release.cluster_init]
 }
 
 resource "helm_release" "secrets_store_driver_aws_provider" {
-  name  = "secrets-provider-aws"
-  repository = "https://aws.github.io/secrets-store-csi-driver-provider-aws"
-  chart = "secrets-store-csi-driver-provider-aws"
-  namespace = "kube-system"
-  depends_on = [helm_release.cluster_init]
+  name            = "secrets-provider-aws"
+  repository      = "https://aws.github.io/secrets-store-csi-driver-provider-aws"
+  chart           = "secrets-store-csi-driver-provider-aws"
+  namespace       = "kube-system"
+  cleanup_on_fail = true
+  depends_on      = [helm_release.cluster_init]
 }
