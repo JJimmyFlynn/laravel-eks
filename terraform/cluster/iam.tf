@@ -56,21 +56,30 @@ resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEC2ContainerRegistr
 # permissions to manage ALBs/NLBs and associate resources
 # such as security groups for the LB and rules in
 # the node security groups
+data "aws_iam_policy_document" "alb_assume_role" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.default.arn]
+      type = "Federated"
+    }
+    condition {
+      test     = "StringEquals"
+      values = ["sts.amazonaws.com"]
+      variable = "${aws_iam_openid_connect_provider.default.url}:aud"
+    }
+    condition {
+      test     = "StringEquals"
+      values = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+      variable = "${aws_iam_openid_connect_provider.default.url}:sub"
+    }
+  }
+}
+
 resource "aws_iam_role" "alb_controller_role" {
   name = "AmazonEKSLoadBalancerControllerRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = ["sts:AssumeRoleWithWebIdentity"]
-        Effect = "Allow"
-        Principal = {
-          Federated = aws_iam_openid_connect_provider.default.arn
-        },
-      },
-    ]
-  })
+  assume_role_policy = data.aws_iam_policy_document.alb_assume_role.json
 }
 
 resource "aws_iam_policy" "alb_policy" {
@@ -84,33 +93,43 @@ resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
 }
 
 # AWS Secrets Provider
+data "aws_iam_policy_document" "secrets_provider_assume_role" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.default.arn]
+      type = "Federated"
+    }
+    condition {
+      test     = "StringEquals"
+      values = ["sts.amazonaws.com"]
+      variable = "${aws_iam_openid_connect_provider.default.url}:aud"
+    }
+    condition {
+      test     = "StringEquals"
+      values = ["system:serviceaccount:laravel:ascp"]
+      variable = "${aws_iam_openid_connect_provider.default.url}:sub"
+    }
+  }
+}
+
 resource "aws_iam_role" "secrets_provider" {
   name = "EKSSecretsProviderRole"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = ["sts:AssumeRoleWithWebIdentity"]
-        Effect = "Allow"
-        Principal = {
-          Federated = aws_iam_openid_connect_provider.default.arn
-        },
-      },
-    ]
-  })
+  assume_role_policy = data.aws_iam_policy_document.secrets_provider_assume_role.json
 }
 
-data "aws_iam_policy_document" "get_sss_parameters_by_path" {
+data "aws_iam_policy_document" "get_ssm_parameters" {
   statement {
     sid     = "AllowAccessToEnvironmentParameters"
+    effect  = "Allow"
     actions = [
       "ssm:DescribeParameters",
       "ssm:GetParameter",
       "ssm:GetParameters",
       "ssm:GetParametersByPath"
     ]
-    effect  = "Allow"
 
     resources = ["*"]
   }
@@ -118,7 +137,7 @@ data "aws_iam_policy_document" "get_sss_parameters_by_path" {
 
 resource "aws_iam_policy" "allow_get_ssm_env_params" {
   name   = "GetSSMEnvironmentParams"
-  policy = data.aws_iam_policy_document.get_sss_parameters_by_path.json
+  policy = data.aws_iam_policy_document.get_ssm_parameters.json
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_provider_get_ssm_params" {
