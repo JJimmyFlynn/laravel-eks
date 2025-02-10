@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-deployment
+  namespace: laravel
+  labels:
+    app: laravel-example
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: laravel-example
+  template:
+    metadata:
+      labels:
+        app: laravel-example
+    spec:
+      serviceAccountName: ascp
+      containers:
+        - name: laravel
+          image: yeasy/simple-web:latest
+          env:
+            - name: APP_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_NAME
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: laravel-app-env

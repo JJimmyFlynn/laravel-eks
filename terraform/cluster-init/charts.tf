@@ -50,6 +50,11 @@ resource "helm_release" "secrets_store_csi_driver" {
   namespace       = "kube-system"
   cleanup_on_fail = true
   depends_on      = [helm_release.cluster_init]
+
+  set {
+    name  = "syncSecret.enabled"
+    value = "true"
+  }
 }
 
 resource "helm_release" "secrets_store_driver_aws_provider" {

@@ -104,10 +104,15 @@ resource "aws_iam_role" "secrets_provider" {
 data "aws_iam_policy_document" "get_sss_parameters_by_path" {
   statement {
     sid     = "AllowAccessToEnvironmentParameters"
-    actions = ["ssm:GetParametersByPath"]
+    actions = [
+      "ssm:DescribeParameters",
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath"
+    ]
     effect  = "Allow"
 
-    resources = ["arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter${var.parameter_store_path}"]
+    resources = ["*"]
   }
 }
 
