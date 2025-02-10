@@ -25,6 +25,41 @@ spec:
                 secretKeyRef:
                   name: laravel-app-env
                   key: APP_NAME
+            - name: APP_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_ENV
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_KEY
+            - name: DB_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_CONNECTION
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_HOST
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_PASSWORD
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_DATABASE
           ports:
             - containerPort: 80
           volumeMounts:
