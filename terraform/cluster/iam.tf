@@ -58,27 +58,27 @@ resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEC2ContainerRegistr
 # the node security groups
 data "aws_iam_policy_document" "alb_assume_role" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       identifiers = [aws_iam_openid_connect_provider.default.arn]
-      type = "Federated"
+      type        = "Federated"
     }
     condition {
       test     = "StringEquals"
-      values = ["sts.amazonaws.com"]
+      values   = ["sts.amazonaws.com"]
       variable = "${aws_iam_openid_connect_provider.default.url}:aud"
     }
     condition {
       test     = "StringEquals"
-      values = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
       variable = "${aws_iam_openid_connect_provider.default.url}:sub"
     }
   }
 }
 
 resource "aws_iam_role" "alb_controller_role" {
-  name = "AmazonEKSLoadBalancerControllerRole"
+  name               = "AmazonEKSLoadBalancerControllerRole"
   assume_role_policy = data.aws_iam_policy_document.alb_assume_role.json
 }
 
@@ -95,20 +95,20 @@ resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
 # AWS Secrets Provider
 data "aws_iam_policy_document" "secrets_provider_assume_role" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       identifiers = [aws_iam_openid_connect_provider.default.arn]
-      type = "Federated"
+      type        = "Federated"
     }
     condition {
       test     = "StringEquals"
-      values = ["sts.amazonaws.com"]
+      values   = ["sts.amazonaws.com"]
       variable = "${aws_iam_openid_connect_provider.default.url}:aud"
     }
     condition {
       test     = "StringEquals"
-      values = ["system:serviceaccount:laravel:ascp"]
+      values   = ["system:serviceaccount:laravel:ascp"]
       variable = "${aws_iam_openid_connect_provider.default.url}:sub"
     }
   }
@@ -122,8 +122,8 @@ resource "aws_iam_role" "secrets_provider" {
 
 data "aws_iam_policy_document" "get_ssm_parameters" {
   statement {
-    sid     = "AllowAccessToEnvironmentParameters"
-    effect  = "Allow"
+    sid    = "AllowAccessToEnvironmentParameters"
+    effect = "Allow"
     actions = [
       "ssm:DescribeParameters",
       "ssm:GetParameter",
