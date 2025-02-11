@@ -1,0 +1,25 @@
+ARG php_version=8.2
+
+FROM composer AS php_deps
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts
+
+FROM node:alpine AS build_assets
+WORKDIR /app
+COPY . /app
+RUN npm ci && npm run build
+
+FROM php:${php_version}-fpm
+ARG BUILD_DATE
+ARG IMAGE_NAME
+ARG VCS_REF
+
+LABEL   org.opencontainers.image.base.name="fly-laravel-php-fpm" \
+        org.opencontainers.image.description="Sample Laravel PHP-FPM" \
+        org.opencontainers.image.source="https://github.com/jjimmyflynn/laravel-k8s" \
+        org.opencontainers.image.vendor="Flynndustries"
+
+WORKDIR /var/www/html
+COPY --from=build_assets --chown=www-data app .
+COPY --from=php_deps --chown=www-data app/vendor ./vendor
+RUN docker-php-ext-install mysqli pdo pdo_mysql

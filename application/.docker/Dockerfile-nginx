@@ -1,0 +1,18 @@
+FROM node:alpine AS build_assets
+WORKDIR /app
+COPY . /app
+RUN npm ci && npm run build
+
+FROM nginx:1.27
+ARG CGI_PASS_HOST=localhost
+
+LABEL   org.opencontainers.image.base.name="fly-laravel-nginx" \
+        org.opencontainers.image.description="Sample Laravel Nginx" \
+        org.opencontainers.image.source="https://github.com/jjimmyflynn/laravel-k8s" \
+        org.opencontainers.image.vendor="Flynndustries"
+
+WORKDIR /var/www/html
+COPY .docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY .docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build_assets app .
+RUN sed -i "s|<CGI_PASS_HOST>|${CGI_PASS_HOST}|g" /etc/nginx/conf.d/default.conf

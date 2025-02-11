@@ -3,9 +3,6 @@ kind: Ingress
 metadata:
   name: laravel
   namespace: laravel
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/tags: Environment=dev
 spec:
   ingressClassName: alb
   rules:
@@ -17,4 +14,4 @@ spec:
               service:
                 name: laravel-service
                 port:
-                  number: 80
+                  name: http

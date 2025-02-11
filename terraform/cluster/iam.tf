@@ -21,7 +21,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.cluster.name
 }
-
+# Node Group
 resource "aws_iam_role" "node_group" {
   name = "eks-node-group-laravel"
 
@@ -35,6 +35,29 @@ resource "aws_iam_role" "node_group" {
     }]
     Version = "2012-10-17"
   })
+}
+
+data "aws_iam_policy_document" "ecr_fly_laravel_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = [aws_ecr_repository.default.arn]
+  }
+}
+
+resource "aws_iam_policy" "ecr_fly_laravel_access" {
+  name = "ECRFlyLaravelAccess"
+  policy = data.aws_iam_policy_document.ecr_fly_laravel_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "node_group_ecr_fly_laravel_access" {
+  policy_arn = aws_iam_policy.ecr_fly_laravel_access.arn
+  role       = aws_iam_role.node_group.name
 }
 
 resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKSWorkerNodePolicy" {

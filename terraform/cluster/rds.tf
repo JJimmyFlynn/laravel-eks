@@ -16,7 +16,7 @@ resource "aws_rds_cluster" "default" {
   engine_version         = "8.0"
   engine_mode            = "provisioned"
   master_username        = "admin"
-  master_password        = "example-password"
+  master_password        = data.aws_ssm_parameter.rds_password.value
   database_name          = "laravel"
   db_subnet_group_name   = aws_db_subnet_group.default.name
   skip_final_snapshot    = true

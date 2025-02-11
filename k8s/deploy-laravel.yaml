@@ -17,8 +17,8 @@ spec:
     spec:
       serviceAccountName: ascp
       containers:
-        - name: laravel
-          image: yeasy/simple-web:latest
+        - name: laravel-php-fpm
+          image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel:latest
           env:
             - name: APP_NAME
               valueFrom:
@@ -61,7 +61,7 @@ spec:
                   name: laravel-app-env
                   key: DB_DATABASE
           ports:
-            - containerPort: 80
+            - containerPort: 9000
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
