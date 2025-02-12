@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "flynn-tfstate-php-infra-poc"
-    key            = "laravel-k8s"
+    key            = "tfstate/laravel-k8s-acm"
     region         = "us-east-1"
     dynamodb_table = "php-infra-state-lock"
   }
