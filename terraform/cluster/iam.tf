@@ -46,7 +46,10 @@ data "aws_iam_policy_document" "ecr_fly_laravel_access" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:GetAuthorizationToken"
     ]
-    resources = [aws_ecr_repository.default.arn]
+    resources = [
+      aws_ecr_repository.php_fpm.arn,
+      aws_ecr_repository.nginx.arn
+    ]
   }
 }
 

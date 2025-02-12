@@ -16,9 +16,123 @@ spec:
         app: laravel-example
     spec:
       serviceAccountName: ascp
+      initContainers:
+        - name: laravel-init
+          image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-php-fpm:latest
+          env:
+            - name: APP_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_NAME
+            - name: APP_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_ENV
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_KEY
+            - name: DB_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_CONNECTION
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_HOST
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_PASSWORD
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_DATABASE
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          command:
+            - /bin/sh
+            - -c
+            - php artisan migrate && php artisan optimize
       containers:
+        - name: laravel-nginx
+          image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-nginx:latest
+          env:
+            - name: APP_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_NAME
+            - name: APP_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_ENV
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_KEY
+            - name: DB_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_CONNECTION
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_HOST
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_PASSWORD
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: DB_DATABASE
+          ports:
+            - containerPort: 80
+              name: http
+          startupProbe:
+            failureThreshold: 18
+            periodSeconds: 5
+            httpGet:
+              port: http
+              path: /up
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              port: http
+              path: /up
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
         - name: laravel-php-fpm
-          image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel:latest
+          image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-php-fpm:latest
           env:
             - name: APP_NAME
               valueFrom:
