@@ -1,0 +1,13 @@
+namespace: laravel
+secrets_provider_controller_service_account:
+  name: ascp
+  role_arn: null # REQUIRED
+service:
+  name: laravel-service
+  port: 80
+  targetPort: 80
+deployment:
+  replicas: 3
+  images:
+    nginx: null # REQUIRED
+    php_fpm: null # REQUIRED

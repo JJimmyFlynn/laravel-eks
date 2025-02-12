@@ -1,6 +1,11 @@
 resource "helm_release" "cluster_init" {
   chart = "../../k8s/helm/cluster-init"
   name  = "cluster-init"
+
+  set {
+    name  = "load_balancer_controller_service_account.role_arn"
+    value = data.terraform_remote_state.cluster.outputs.alb_controller_role_arn
+  }
 }
 
 resource "helm_release" "aws_load_balancer_controller" {
@@ -64,4 +69,31 @@ resource "helm_release" "secrets_store_driver_aws_provider" {
   namespace       = "kube-system"
   cleanup_on_fail = true
   depends_on      = [helm_release.cluster_init]
+}
+
+resource "helm_release" "laravel_application" {
+  name = "laravel-app"
+  chart = "../../k8s/helm/laravel-app"
+  cleanup_on_fail = true
+  depends_on = [
+    helm_release.cluster_init,
+    helm_release.aws_load_balancer_controller,
+    helm_release.secrets_store_csi_driver,
+    helm_release.secrets_store_driver_aws_provider
+  ]
+
+  set {
+    name  = "secrets_provider_controller_service_account.role_arn"
+    value = data.terraform_remote_state.cluster.outputs.secrets_provider_role_arn
+  }
+
+  set {
+    name  = "deployment.images.nginx"
+    value = data.terraform_remote_state.cluster.outputs.nginx_image
+  }
+
+  set {
+    name  = "deployment.images.php_fpm"
+    value = data.terraform_remote_state.cluster.outputs.php_fpm_image
+  }
 }

@@ -2,13 +2,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: laravel
-  namespace: laravel
+  namespace: {{ .Values.namespace }}
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/load-balancer-name: laravel-k8s-external
+    alb.ingress.kubernetes.io/group.name: laravel-k8s-external
+    alb.ingress.kubernetes.io/healthcheck-path: /up
 spec:
   ingressClassName: alb
   rules:
-    - http:
+    - host: "laravel-k8s.johnjflynn.net"
+      http:
         paths:
           - path: /
             pathType: Prefix

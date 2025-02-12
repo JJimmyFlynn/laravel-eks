@@ -1,0 +1,7 @@
+# We define the namespace from the chart values rather than relying on it being
+# passed in from helm install. This ensures the namespace is populated
+# when using both helm install and helm template commands
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}

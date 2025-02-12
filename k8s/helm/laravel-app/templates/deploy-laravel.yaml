@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: laravel-deployment
-  namespace: laravel
+  namespace: {{ .Values.namespace }}
   labels:
     app: laravel-example
 spec:
-  replicas: 3
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       app: laravel-example
@@ -131,6 +131,13 @@ spec:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+          resources:
+            requests:
+              cpu: 25m
+              memory: "25Mi"
+            limits:
+              cpu: 50m
+              memory: "50Mi"
         - name: laravel-php-fpm
           image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-php-fpm:latest
           env:
@@ -180,6 +187,13 @@ spec:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: "75Mi"
+            limits:
+              cpu: 150m
+              memory: "150Mi"
       volumes:
         - name: secrets-store-inline
           csi:

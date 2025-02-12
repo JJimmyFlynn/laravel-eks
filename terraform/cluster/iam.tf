@@ -37,32 +37,6 @@ resource "aws_iam_role" "node_group" {
   })
 }
 
-data "aws_iam_policy_document" "ecr_fly_laravel_access" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetAuthorizationToken"
-    ]
-    resources = [
-      aws_ecr_repository.php_fpm.arn,
-      aws_ecr_repository.nginx.arn
-    ]
-  }
-}
-
-resource "aws_iam_policy" "ecr_fly_laravel_access" {
-  name = "ECRFlyLaravelAccess"
-  policy = data.aws_iam_policy_document.ecr_fly_laravel_access.json
-}
-
-resource "aws_iam_role_policy_attachment" "node_group_ecr_fly_laravel_access" {
-  policy_arn = aws_iam_policy.ecr_fly_laravel_access.arn
-  role       = aws_iam_role.node_group.name
-}
-
 resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node_group.name

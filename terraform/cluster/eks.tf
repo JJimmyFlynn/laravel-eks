@@ -45,6 +45,6 @@ resource "aws_eks_node_group" "app" {
   depends_on = [
     aws_iam_role_policy_attachment.laravel-k8s-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.laravel-k8s-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.laravel-k8s-AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.laravel-k8s-AmazonEC2ContainerRegistryReadOnly
   ]
 }

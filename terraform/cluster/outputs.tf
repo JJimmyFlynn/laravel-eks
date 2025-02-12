@@ -13,3 +13,19 @@ output "cluster_endpoint" {
 output "eks_cluster_ca_certificate" {
   value = aws_eks_cluster.default.certificate_authority.0.data
 }
+
+output "alb_controller_role_arn" {
+  value = aws_iam_role.alb_controller_role.arn
+}
+
+output "secrets_provider_role_arn" {
+  value = aws_iam_role.secrets_provider.arn
+}
+
+output "nginx_image" {
+  value = data.aws_ecr_image.laravel_nginx.image_uri
+}
+
+output "php_fpm_image" {
+  value = data.aws_ecr_image.laravel_php_fpm.image_uri
+}

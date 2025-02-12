@@ -1,4 +1,4 @@
-ARG php_version=8.2
+ARG php_version=8.4
 
 FROM composer AS php_deps
 COPY composer.json composer.lock ./
