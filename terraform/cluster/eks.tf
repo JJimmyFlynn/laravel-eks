@@ -1,3 +1,4 @@
+/*=========== EKS Cluster ===========*/
 resource "aws_eks_cluster" "default" {
   name                          = "laravel-k8s"
   role_arn                      = aws_iam_role.cluster.arn
@@ -23,6 +24,7 @@ resource "aws_eks_cluster" "default" {
   ]
 }
 
+/*=========== Node Group ===========*/
 resource "aws_eks_node_group" "app" {
   node_group_name = "node-group-1"
   cluster_name    = aws_eks_cluster.default.name

@@ -5,4 +5,3 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     eks.amazonaws.com/role-arn: {{ required "A role ARN for the secrets provider service account is required" .Values.secrets_provider_controller_service_account.role_arn  }}
-    # eks.amazonaws.com/role-arn: arn:aws:iam::654654165875:role/EKSSecretsProviderRole

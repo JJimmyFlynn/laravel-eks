@@ -5,4 +5,3 @@ metadata:
   namespace: kube-system
   annotations:
     eks.amazonaws.com/role-arn: {{ required "A role ARN for the AWS load balancer service account is required" .Values.load_balancer_controller_service_account.role_arn  }}
-    # eks.amazonaws.com/role-arn: arn:aws:iam::654654165875:role/AmazonEKSLoadBalancerControllerRole

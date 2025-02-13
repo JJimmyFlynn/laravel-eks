@@ -1,0 +1,28 @@
+domainFilters:
+    - johnjflynn.net
+sources:
+    - ingress
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: ${secrets_provider_role_arn}
+provider:
+  name: cloudflare
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api
+        key: API_TOKEN
+extraVolumes:
+  - name: secrets-store-inline
+    csi:
+      driver: secrets-store.csi.k8s.io
+      readOnly: true
+      volumeAttributes:
+        secretProviderClass: cloudflare-api
+extraVolumeMounts:
+  - name: secrets-store-inline
+    mountPath: "/mnt/secrets-store"
+    readOnly: true
+extraArgs:
+  - --zone-id-filter=5dd74884875eab209eadaafc8acd74ac

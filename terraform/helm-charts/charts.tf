@@ -14,27 +14,14 @@ resource "helm_release" "aws_load_balancer_controller" {
   chart           = "aws-load-balancer-controller"
   namespace       = "kube-system"
   cleanup_on_fail = true
+  values = [
+    file("${path.module}/values/alb-controller.yaml")
+  ]
 
-  depends_on = [helm_release.cluster_init]
 
   set {
     name  = "clusterName"
     value = data.terraform_remote_state.cluster.outputs.eks_cluster_name
-  }
-
-  set {
-    name  = "serviceAccount.create"
-    value = "false"
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = "aws-load-balancer-controller"
-  }
-
-  set {
-    name  = "serviceAccount.namespace"
-    value = "kube-system"
   }
 
   set {
@@ -54,7 +41,6 @@ resource "helm_release" "secrets_store_csi_driver" {
   chart           = "secrets-store-csi-driver"
   namespace       = "kube-system"
   cleanup_on_fail = true
-  depends_on      = [helm_release.cluster_init]
 
   set {
     name  = "syncSecret.enabled"
@@ -68,12 +54,31 @@ resource "helm_release" "secrets_store_driver_aws_provider" {
   chart           = "secrets-store-csi-driver-provider-aws"
   namespace       = "kube-system"
   cleanup_on_fail = true
-  depends_on      = [helm_release.cluster_init]
+  depends_on      = [
+    helm_release.secrets_store_csi_driver
+  ]
+}
+
+resource "helm_release" "external_dns" {
+  name       = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
+  chart      = "external-dns"
+  version = "1.15.0"
+  namespace = "kube-system"
+  cleanup_on_fail = true
+  values = [
+    templatefile("${path.module}/values/external-dns.yaml", {
+      secrets_provider_role_arn = data.terraform_remote_state.cluster.outputs.secrets_provider_role_arn
+    })
+  ]
+  depends_on = [
+    helm_release.secrets_store_driver_aws_provider
+  ]
 }
 
 resource "helm_release" "laravel_application" {
-  name = "laravel-app"
-  chart = "../../k8s/helm/laravel-app"
+  name            = "laravel-app"
+  chart           = "../../k8s/helm/laravel-app"
   cleanup_on_fail = true
   depends_on = [
     helm_release.cluster_init,

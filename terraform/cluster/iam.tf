@@ -1,61 +1,31 @@
-resource "aws_iam_role" "cluster" {
-  name = "eks-cluster-role-laravel"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "sts:AssumeRole",
-          "sts:TagSession"
-        ]
-        Effect = "Allow"
-        Principal = {
-          Service = "eks.amazonaws.com"
-        }
-      },
+/*=========== Assume Role/Trust Policy Definitions ===========*/
+data "aws_iam_policy_document" "eks_general_assume_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
     ]
-  })
+    principals {
+      identifiers = ["eks.amazonaws.com"]
+      type = "Service"
+    }
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.cluster.name
-}
-# Node Group
-resource "aws_iam_role" "node_group" {
-  name = "eks-node-group-laravel"
-
-  assume_role_policy = jsonencode({
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-    Version = "2012-10-17"
-  })
+data "aws_iam_policy_document" "ec2_general_assume_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type = "Service"
+    }
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.node_group.name
-}
-
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.node_group.name
-}
-
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.node_group.name
-}
-
-# The AWS LB Controller requires a role with appropriate
-# permissions to manage ALBs/NLBs and associate resources
-# such as security groups for the LB and rules in
-# the node security groups
 data "aws_iam_policy_document" "alb_assume_role" {
   statement {
     effect  = "Allow"
@@ -77,22 +47,7 @@ data "aws_iam_policy_document" "alb_assume_role" {
   }
 }
 
-resource "aws_iam_role" "alb_controller_role" {
-  name               = "AmazonEKSLoadBalancerControllerRole"
-  assume_role_policy = data.aws_iam_policy_document.alb_assume_role.json
-}
-
-resource "aws_iam_policy" "alb_policy" {
-  name   = "AWSLoadBalancerControllerIAMPolicy"
-  policy = file("./alb_iam_policy.json") // recommended by AWS
-}
-
-resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
-  policy_arn = aws_iam_policy.alb_policy.arn
-  role       = aws_iam_role.alb_controller_role.name
-}
-
-# AWS Secrets Provider
+# CSI Secrets Provider
 data "aws_iam_policy_document" "secrets_provider_assume_role" {
   statement {
     effect  = "Allow"
@@ -108,16 +63,23 @@ data "aws_iam_policy_document" "secrets_provider_assume_role" {
     }
     condition {
       test     = "StringEquals"
-      values   = ["system:serviceaccount:laravel:ascp"]
+      values   = [
+        "system:serviceaccount:laravel:ascp",
+        "system:serviceaccount:kube-system:external-dns"
+      ]
       variable = "${aws_iam_openid_connect_provider.default.url}:sub"
     }
   }
 }
 
-resource "aws_iam_role" "secrets_provider" {
-  name = "EKSSecretsProviderRole"
-
-  assume_role_policy = data.aws_iam_policy_document.secrets_provider_assume_role.json
+/*=========== Policy Definitions ===========*/
+# The AWS LB Controller requires a role with appropriate
+# permissions to manage ALBs/NLBs and associate resources
+# such as security groups for the LB and rules in
+# the node security groups
+resource "aws_iam_policy" "alb_policy" {
+  name   = "AWSLoadBalancerControllerIAMPolicy"
+  policy = file("./alb_iam_policy.json") // recommended by AWS
 }
 
 data "aws_iam_policy_document" "get_ssm_parameters" {
@@ -131,13 +93,59 @@ data "aws_iam_policy_document" "get_ssm_parameters" {
       "ssm:GetParametersByPath"
     ]
 
-    resources = ["*"]
+    resources = ["arn:aws:ssm:us-east-1:654654165875:parameter/laravel-k8s/*"]
   }
 }
 
 resource "aws_iam_policy" "allow_get_ssm_env_params" {
   name   = "GetSSMEnvironmentParams"
   policy = data.aws_iam_policy_document.get_ssm_parameters.json
+}
+
+/*=========== Role Definitions ===========*/
+resource "aws_iam_role" "cluster" {
+  name = "eks-cluster-role-laravel"
+  assume_role_policy = data.aws_iam_policy_document.eks_general_assume_role.json
+}
+
+resource "aws_iam_role" "node_group" {
+  name = "eks-node-group-laravel"
+  assume_role_policy = data.aws_iam_policy_document.ec2_general_assume_role.json
+}
+
+resource "aws_iam_role" "alb_controller_role" {
+  name               = "AmazonEKSLoadBalancerControllerRole"
+  assume_role_policy = data.aws_iam_policy_document.alb_assume_role.json
+}
+
+resource "aws_iam_role" "secrets_provider" {
+  name               = "EKSSecretsProviderRole"
+  assume_role_policy = data.aws_iam_policy_document.secrets_provider_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.cluster.name
+}
+
+resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.node_group.name
+}
+
+resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.node_group.name
+}
+
+resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.node_group.name
+}
+
+resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
+  policy_arn = aws_iam_policy.alb_policy.arn
+  role       = aws_iam_role.alb_controller_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_provider_get_ssm_params" {
