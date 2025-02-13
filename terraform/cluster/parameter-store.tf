@@ -1,3 +1,9 @@
+resource "aws_ssm_parameter" "env_app_url" {
+  name  = "${var.parameter_store_path}/APP_URL"
+  type  = "String"
+  value = "https://laravel-k8s.johnjflynn.net"
+}
+
 resource "aws_ssm_parameter" "env_app_name" {
   name  = "${var.parameter_store_path}/APP_NAME"
   type  = "String"

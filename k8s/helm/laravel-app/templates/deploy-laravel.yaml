@@ -72,6 +72,11 @@ spec:
         - name: laravel-nginx
           image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-nginx:latest
           env:
+            - name: APP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_URL
             - name: APP_NAME
               valueFrom:
                 secretKeyRef:
@@ -141,6 +146,11 @@ spec:
         - name: laravel-php-fpm
           image: 654654165875.dkr.ecr.us-east-1.amazonaws.com/fly-laravel-php-fpm:latest
           env:
+            - name: APP_URL
+              valueFrom:
+                secretKeyRef:
+                  name: laravel-app-env
+                  key: APP_URL
             - name: APP_NAME
               valueFrom:
                 secretKeyRef:
