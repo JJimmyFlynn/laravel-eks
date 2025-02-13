@@ -4,6 +4,7 @@ resource "aws_eks_cluster" "default" {
   role_arn                      = aws_iam_role.cluster.arn
   bootstrap_self_managed_addons = true
   version                       = "1.32"
+  enabled_cluster_log_types = ["api", "controllerManager", "scheduler", "authenticator"]
 
   access_config {
     authentication_mode                         = "API"
