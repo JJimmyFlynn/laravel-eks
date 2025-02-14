@@ -24,4 +24,6 @@ At a high level it consists of:
 - Secrets Store CSI Driver and AWS Provider to allow for creation and mounting of secrets pulled from SSM Parameter Store and Secrets Manager
 - Service accounts configured with IAM roles to allow for AWS resources access
 - External DNS configured to update Cloudflare records when ingress objects are created
-- Example Laravel application which pulls its environment variables from SSM Parameter Store via the Secrets Store CSI Driver
+- Example Laravel application
+  - Served via Nginx and PHP-fpm
+  - Pulls its environment variables from SSM Parameter Store via the Secrets Store CSI Driver

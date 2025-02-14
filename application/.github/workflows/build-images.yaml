@@ -1,0 +1,12 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .docker/**/*
+  workflow_dispatch:
+jobs:
+  buildPhpFpmImage:
+    name: Build php-fpm image
+    runs-on: ubuntu-22.04
+    steps:
