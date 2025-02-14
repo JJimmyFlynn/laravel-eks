@@ -1,5 +1,5 @@
 > [!Note]
-> Documentation is a work in progress
+> Documentation and project are works in progress
 
 ## EKS with Laravel App
 This is an example infrastructure and deployment for a Laravel application on AWS EKS.
