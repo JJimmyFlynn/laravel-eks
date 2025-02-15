@@ -1,7 +1,9 @@
 namespace: laravel
+domain: # REQUIRED
+alb_domain: # REQUIRED
 secrets_provider_controller_service_account:
   name: ascp
-  role_arn: null # REQUIRED
+  role_arn: # REQUIRED
 service:
   name: laravel-service
   port: 80
@@ -9,5 +11,5 @@ service:
 deployment:
   replicas: 3
   images:
-    nginx: null # REQUIRED
-    php_fpm: null # REQUIRED
+    nginx: # REQUIRED
+    php_fpm: # REQUIRED

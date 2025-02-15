@@ -10,10 +10,14 @@ metadata:
     alb.ingress.kubernetes.io/load-balancer-name: laravel-k8s-external
     alb.ingress.kubernetes.io/group.name: laravel-k8s-external
     alb.ingress.kubernetes.io/healthcheck-path: /up
+    external-dns.alpha.kubernetes.io/ingress-hostname-source: annotation-only
+    # Assign a specific hostname for external DNS to point at the ALB
+    # so that CloudFront can use it as a custom origin
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.alb_domain | required "A valid ALB domain is required" }}
 spec:
   ingressClassName: alb
   rules:
-    - host: "laravel-k8s.johnjflynn.net"
+    - host: {{ .Values.domain | required "A valid application domain is required" }}
       http:
         paths:
           - path: /

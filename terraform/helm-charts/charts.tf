@@ -88,6 +88,16 @@ resource "helm_release" "laravel_application" {
   ]
 
   set {
+    name  = "domain"
+    value = var.domain
+  }
+
+  set {
+    name  = "alb_domain"
+    value = var.alb_domain
+  }
+
+  set {
     name  = "secrets_provider_controller_service_account.role_arn"
     value = data.terraform_remote_state.cluster.outputs.secrets_provider_role_arn
   }
