@@ -8,6 +8,16 @@ variable "role_arn" {
   description = "ARN of the role for terraform to assume"
 }
 
+variable "cloudfront_domain" {
+  type = string
+  description = "Domain alias for the cloudfront distribution. Should match host name of Laravel app"
+}
+
+variable "alb_domain" {
+  type = string
+  description = "The domain name of the ALB that will be created by AWS Load Balancer Controller"
+}
+
 variable "admin_arn" {
   type = string
 }
@@ -33,4 +43,12 @@ variable "aurora_instance_count" {
 variable "parameter_store_path" {
   type        = string
   description = "The path at which ssm parameters are stored for this application/stage. e.g. /example-application/dev"
+}
+
+variable "cloudflare_api_token" {
+  type = string
+}
+
+variable "cloudflare_zone_id" {
+  type = string
 }

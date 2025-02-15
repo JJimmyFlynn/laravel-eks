@@ -120,18 +120,12 @@ spec:
           ports:
             - containerPort: 80
               name: http
-          startupProbe:
-            failureThreshold: 18
-            periodSeconds: 5
-            httpGet:
-              port: http
-              path: /up
           readinessProbe:
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            periodSeconds: 5
+            failureThreshold: 5
             httpGet:
-              port: http
               path: /up
+              port: http
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"

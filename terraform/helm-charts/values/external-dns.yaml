@@ -2,6 +2,7 @@ domainFilters:
     - johnjflynn.net
 sources:
     - ingress
+policy: sync
 serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: ${secrets_provider_role_arn}

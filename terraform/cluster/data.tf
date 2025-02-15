@@ -10,3 +10,8 @@ data "aws_ecr_image" "laravel_php_fpm" {
   repository_name = aws_ecr_repository.php_fpm.name
   image_tag       = "latest"
 }
+
+data "aws_acm_certificate" "cloudfront_domain_certificate" {
+  domain   = var.cloudfront_domain
+  statuses = ["ISSUED"]
+}
