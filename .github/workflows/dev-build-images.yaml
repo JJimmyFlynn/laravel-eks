@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       - application/**/*
   workflow_dispatch:
@@ -16,4 +17,13 @@ jobs:
     secrets: inherit
     with:
       ENVIRONMENT: dev
+      DOCKERFILE_PATH: ./application/.docker/Dockerfile.php-fpm
       IMAGE_NAME: fly-laravel-php-fpm
+  buildNginxImage:
+    name: Build nginx image
+    uses: ./.github/workflows/reusable-build-image.yaml
+    secrets: inherit
+    with:
+      ENVIRONMENT: dev
+      DOCKERFILE_PATH: ./application/.docker/Dockerfile.nginx
+      IMAGE_NAME: fly-laravel-nginx

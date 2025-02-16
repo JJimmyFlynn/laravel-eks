@@ -5,6 +5,9 @@ on:
       ENVIRONMENT:
         required: true
         type: string
+      DOCKERFILE_PATH:
+        required: true
+        type: string
       IMAGE_NAME:
         required: true
         type: string
@@ -30,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./application
-          file: ./application/.docker/Dockerfile.php-fpm
+          file: ${{inputs.DOCKERFILE_PATH}}
           push: true
           tags: |
             ${{secrets.ECR_URL}}${{inputs.IMAGE_NAME}}:${{ github.sha }}
