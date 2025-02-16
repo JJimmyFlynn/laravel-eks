@@ -6,7 +6,7 @@ This is an example infrastructure and deployment for a Laravel application on AW
 
 At a high level it consists of:
 ### Laravel Application
-- A basic Laravel application slightly modifed to run in a load balanced environment as per the official docs
+- A basic Laravel application slightly modified to run in a load balanced environment as per the [official docs](https://laravel.com/docs/11.x/requests#configuring-trusted-proxies)
 - Dockerfiles to build an nginx and php-fpm image from the application
 ### AWS
 - All deployed via Open Tofu
@@ -27,3 +27,5 @@ At a high level it consists of:
 - Example Laravel application
   - Served via Nginx and PHP-fpm
   - Pulls its environment variables from SSM Parameter Store via the Secrets Store CSI Driver
+### CI/CD
+- Container images are built via Github actions and pushed to an ECR registry
