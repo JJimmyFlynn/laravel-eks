@@ -9,12 +9,12 @@ variable "role_arn" {
 }
 
 variable "cloudfront_domain" {
-  type = string
+  type        = string
   description = "Domain alias for the cloudfront distribution. Should match host name of Laravel app"
 }
 
 variable "alb_domain" {
-  type = string
+  type        = string
   description = "The domain name of the ALB that will be created by AWS Load Balancer Controller"
 }
 

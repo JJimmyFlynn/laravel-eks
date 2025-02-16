@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "eks_general_assume_role" {
     ]
     principals {
       identifiers = ["eks.amazonaws.com"]
-      type = "Service"
+      type        = "Service"
     }
   }
 }
@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "ec2_general_assume_role" {
     ]
     principals {
       identifiers = ["ec2.amazonaws.com"]
-      type = "Service"
+      type        = "Service"
     }
   }
 }
@@ -62,8 +62,8 @@ data "aws_iam_policy_document" "secrets_provider_assume_role" {
       variable = "${aws_iam_openid_connect_provider.default.url}:aud"
     }
     condition {
-      test     = "StringEquals"
-      values   = [
+      test = "StringEquals"
+      values = [
         "system:serviceaccount:laravel:ascp",
         "system:serviceaccount:kube-system:external-dns"
       ]
@@ -74,23 +74,23 @@ data "aws_iam_policy_document" "secrets_provider_assume_role" {
 
 data "aws_iam_policy_document" "github_assume_role" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
-      type = "Federated"
+      type        = "Federated"
       identifiers = [aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
       test     = "StringEquals"
-      values = ["sts.amazonaws.com"]
+      values   = ["sts.amazonaws.com"]
       variable = "token.actions.githubusercontent.com:aud"
     }
 
     condition {
       test     = "StringLike"
-      values = ["repo:JJimmyFlynn/laravel-eks:*"]
+      values   = ["repo:JJimmyFlynn/laravel-eks:*"]
       variable = "token.actions.githubusercontent.com:sub"
     }
   }
@@ -128,8 +128,8 @@ resource "aws_iam_policy" "allow_get_ssm_env_params" {
 
 data "aws_iam_policy_document" "ecr_push_pull" {
   statement {
-    effect = "Allow"
-    actions = ["ecr:GetAuthorizationToken"]
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
 
@@ -152,18 +152,18 @@ data "aws_iam_policy_document" "ecr_push_pull" {
 }
 
 resource "aws_iam_policy" "allow_ecr_push_pull" {
-  name = "ECRPushPull"
+  name   = "ECRPushPull"
   policy = data.aws_iam_policy_document.ecr_push_pull.json
 }
 
 /*=========== Role Definitions ===========*/
 resource "aws_iam_role" "cluster" {
-  name = "eks-cluster-role-laravel"
+  name               = "eks-cluster-role-laravel"
   assume_role_policy = data.aws_iam_policy_document.eks_general_assume_role.json
 }
 
 resource "aws_iam_role" "node_group" {
-  name = "eks-node-group-laravel"
+  name               = "eks-node-group-laravel"
   assume_role_policy = data.aws_iam_policy_document.ec2_general_assume_role.json
 }
 
@@ -178,7 +178,7 @@ resource "aws_iam_role" "secrets_provider" {
 }
 
 resource "aws_iam_role" "github_actions" {
-  name = "laravelK8sGithubActions"
+  name               = "laravelK8sGithubActions"
   assume_role_policy = data.aws_iam_policy_document.github_assume_role.json
 }
 
