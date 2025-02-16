@@ -23,7 +23,7 @@ jobs:
       - name: Login to Amazon ECR
         uses: docker/login-action@v2
         with:
-          registry: ${{inputs.ECR_URL}}
+          registry: ${{inputs.ECR_URL}}${{inputs.IMAGE_NAME}}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build, tag, and push docker image to Amazon ECR
