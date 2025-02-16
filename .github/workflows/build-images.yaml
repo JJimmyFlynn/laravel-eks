@@ -30,8 +30,10 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+#          cache-from: type=gha
+#          cache-to: type=gha,mode=max
+          context: ./application
+          file: {context}/.docker/Dockerfile-php-fpm
           push: true
           tags: |
             ${{secrets.ECR_URL_PHP_FPM}}:${{ github.sha }}
