@@ -72,6 +72,30 @@ data "aws_iam_policy_document" "secrets_provider_assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "github_assume_role" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      values = ["sts.amazonaws.com"]
+      variable = "token.actions.githubusercontent.com:aud"
+    }
+
+    condition {
+      test     = "StringLike"
+      values = ["repo:JJimmyFlynn/laravel-eks:*"]
+      variable = "token.actions.githubusercontent.com:sub"
+    }
+  }
+}
+
 /*=========== Policy Definitions ===========*/
 # The AWS LB Controller requires a role with appropriate
 # permissions to manage ALBs/NLBs and associate resources
@@ -102,6 +126,36 @@ resource "aws_iam_policy" "allow_get_ssm_env_params" {
   policy = data.aws_iam_policy_document.get_ssm_parameters.json
 }
 
+data "aws_iam_policy_document" "ecr_push_pull" {
+  statement {
+    effect = "Allow"
+    actions = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart"
+    ]
+    resources = [
+      aws_ecr_repository.php_fpm.arn,
+      aws_ecr_repository.nginx.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "allow_ecr_push_pull" {
+  name = "ECRPushPull"
+  policy = data.aws_iam_policy_document.ecr_push_pull.json
+}
+
 /*=========== Role Definitions ===========*/
 resource "aws_iam_role" "cluster" {
   name = "eks-cluster-role-laravel"
@@ -121,6 +175,11 @@ resource "aws_iam_role" "alb_controller_role" {
 resource "aws_iam_role" "secrets_provider" {
   name               = "EKSSecretsProviderRole"
   assume_role_policy = data.aws_iam_policy_document.secrets_provider_assume_role.json
+}
+
+resource "aws_iam_role" "github_actions" {
+  name = "laravelK8sGithubActions"
+  assume_role_policy = data.aws_iam_policy_document.github_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
@@ -151,4 +210,9 @@ resource "aws_iam_role_policy_attachment" "alb_controller_role_attachment" {
 resource "aws_iam_role_policy_attachment" "secrets_provider_get_ssm_params" {
   policy_arn = aws_iam_policy.allow_get_ssm_env_params.arn
   role       = aws_iam_role.secrets_provider.name
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_ecr_push_pull" {
+  policy_arn = aws_iam_policy.allow_ecr_push_pull.arn
+  role       = aws_iam_role.github_actions.name
 }
