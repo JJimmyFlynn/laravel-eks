@@ -8,5 +8,5 @@ tasks:
       - aws eks update-kubeconfig --name laravel-k8s
   down:
     cmds:
-      - tofu -chdir=terraform/cluster destroy -var-file=.tfvars -auto-approve
       - tofu -chdir=terraform/helm-charts destroy -var-file=.tfvars -auto-approve
+      - tofu -chdir=terraform/cluster destroy -var-file=.tfvars -auto-approve
