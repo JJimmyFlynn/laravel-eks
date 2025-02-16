@@ -1,3 +1,4 @@
+name: 🛠️ DEV - Build Images
 on:
   push:
     branches:
@@ -11,28 +12,8 @@ permissions:
 jobs:
   buildPhpFpmImage:
     name: Build php-fpm image
-    runs-on: ubuntu-22.04
-    environment: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{secrets.AWS_EXECUTION_ROLE}}
-          aws-region: "us-east-1"
-      - name: Login to Amazon ECR
-        uses: docker/login-action@v2
-        with:
-          registry: ${{secrets.ECR_URL_PHP_FPM}}
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build, tag, and push docker image to Amazon ECR
-        uses: docker/build-push-action@v4
-        with:
-          context: ./application
-          file: ./application/.docker/Dockerfile-php-fpm
-          push: true
-          tags: |
-            ${{secrets.ECR_URL_PHP_FPM}}:${{ github.sha }}
-            ${{secrets.ECR_URL_PHP_FPM}}:latest
+    uses: ./.github/workflows/reusable-build-image.yaml
+    secrets: inherit
+    with:
+      ENVIRONMENT: dev
+      IMAGE_NAME: fly-laravel-php-fpm
