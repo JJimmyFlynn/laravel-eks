@@ -22,4 +22,22 @@ LABEL   org.opencontainers.image.base.name="fly-laravel-php-fpm" \
 WORKDIR /var/www/html
 COPY --from=build_assets --chown=www-data app .
 COPY --from=php_deps --chown=www-data app/vendor ./vendor
-RUN docker-php-ext-install mysqli pdo pdo_mysql opcache
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+# Install php extensions with php-extension-install script and remove script after use
+RUN curl -sSLf -o /usr/local/bin/install-php-extensions \
+    https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+    chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions  \
+    bcmath \
+    bz2 \
+    imagick \
+    intl \
+    ldap \
+    mysqli \
+    opcache \
+    openssl \
+    pdo \
+    pdo_mysql \
+    redis \
+    sodium  && \
+    rm /usr/local/bin/install-php-extensions
