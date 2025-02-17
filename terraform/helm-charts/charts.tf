@@ -111,4 +111,9 @@ resource "helm_release" "laravel_application" {
     name  = "deployment.images.php_fpm"
     value = data.terraform_remote_state.cluster.outputs.php_fpm_image
   }
+
+  set_list {
+    name  = "ingress.loadBalancer.securityGroupIds"
+    value = [data.terraform_remote_state.cluster.outputs.security_group_allow_cloudfront_inbound_id]
+  }
 }

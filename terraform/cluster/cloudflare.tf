@@ -1,7 +1,9 @@
+
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
+/*=========== Main Domain Cloudflare DNS Record ===========*/
 resource "cloudflare_dns_record" "default" {
   zone_id = var.cloudflare_zone_id
   name    = "laravel-k8s.johnjflynn.net"

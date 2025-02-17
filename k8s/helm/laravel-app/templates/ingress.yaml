@@ -14,6 +14,10 @@ metadata:
     # Assign a specific hostname for external DNS to point at the ALB
     # so that CloudFront can use it as a custom origin
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.alb_domain | required "A valid ALB domain is required" }}
+    {{ range .Values.ingress.loadBalancer.securityGroupIds }}
+    alb.ingress.kubernetes.io/security-groups: {{ . }}
+    {{ end }}
+    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
 spec:
   ingressClassName: alb
   rules:

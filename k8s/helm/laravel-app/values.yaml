@@ -13,3 +13,6 @@ deployment:
   images:
     nginx: # REQUIRED
     php_fpm: # REQUIRED
+ingress:
+  loadBalancer:
+    securityGroupIds: []

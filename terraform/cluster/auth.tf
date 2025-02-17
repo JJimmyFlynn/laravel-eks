@@ -1,4 +1,4 @@
-
+/*=========== EKS Access Entries/Policies ===========*/
 # Access entry for the primary cluster admin AWS role or user
 resource "aws_eks_access_entry" "laravel-eks-admin" {
   cluster_name      = aws_eks_cluster.default.name
