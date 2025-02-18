@@ -2,7 +2,7 @@ namespace: laravel
 domain: # REQUIRED
 alb_domain: # REQUIRED
 secrets_provider_controller_service_account:
-  name: ascp
+  name: external-secrets
   role_arn: # REQUIRED
 service:
   name: laravel-service

@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "secrets_provider_assume_role" {
     condition {
       test = "StringEquals"
       values = [
-        "system:serviceaccount:laravel:ascp",
+        "system:serviceaccount:laravel:external-secrets",
         "system:serviceaccount:kube-system:external-dns"
       ]
       variable = "${aws_iam_openid_connect_provider.default.url}:sub"

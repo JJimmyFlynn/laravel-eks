@@ -15,7 +15,6 @@ spec:
       labels:
         app: laravel-example
     spec:
-      serviceAccountName: ascp
       initContainers:
         - name: laravel-init
           image: {{ .Values.deployment.images.php_fpm | required "A php-fpm image is required" }}
@@ -60,10 +59,6 @@ spec:
                 secretKeyRef:
                   name: laravel-app-env
                   key: DB_DATABASE
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
           command:
             - /bin/sh
             - -c
@@ -126,10 +121,6 @@ spec:
             httpGet:
               path: /up
               port: http
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
           resources:
             requests:
               cpu: 25m
@@ -187,10 +178,6 @@ spec:
                   key: DB_DATABASE
           ports:
             - containerPort: 9000
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
           resources:
             requests:
               cpu: 50m
@@ -198,10 +185,3 @@ spec:
             limits:
               cpu: 150m
               memory: "150Mi"
-      volumes:
-        - name: secrets-store-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: laravel-app-env

@@ -17,6 +17,7 @@ At a high level it consists of:
   - With a corresponding OIDC endpoint for authentication to AWS
 - An Aurora serverless MYSQL RDS instance
 - Systems Manager Parameter Store values to house environment variables for the Laravel App
+- Application ingress ALB fronted by and locked down to CloudFront
 - CloudWatch for EKS control plane node logs
 ### Kubernetes
 - All deployed via [Helm](https://helm.sh) charts and [Open Tofu](https://opentofu.org)
