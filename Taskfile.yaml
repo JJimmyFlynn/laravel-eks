@@ -4,8 +4,8 @@ tasks:
   up:
     cmds:
       - tofu -chdir=terraform/cluster apply -var-file=.tfvars -auto-approve
-      - tofu -chdir=terraform/helm-charts apply -var-file=.tfvars -auto-approve
       - aws eks update-kubeconfig --name laravel-k8s
+      - tofu -chdir=terraform/helm-charts apply -var-file=.tfvars -auto-approve
   down:
     cmds:
       - tofu -chdir=terraform/helm-charts destroy -var-file=.tfvars -auto-approve

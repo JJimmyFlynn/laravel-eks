@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . /app
 RUN npm ci && npm run build
 
-FROM nginx:1.27
+FROM nginx:alpine3.21
 ARG CGI_PASS_HOST=localhost
 
 LABEL   org.opencontainers.image.base.name="fly-laravel-nginx" \
