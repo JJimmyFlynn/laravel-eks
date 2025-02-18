@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 RUN npm ci && npm run build
 
-FROM php:${php_version}-fpm-alpine:3.21
+FROM php:${php_version}-fpm-alpine
 ARG BUILD_DATE
 ARG IMAGE_NAME
 ARG VCS_REF
