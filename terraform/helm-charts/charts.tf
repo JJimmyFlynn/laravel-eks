@@ -1,6 +1,12 @@
+resource "helm_release" "metrics_server" {
+  name  = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server"
+  chart = "metrics-server"
+}
+
 resource "helm_release" "cluster_init" {
-  chart = "../../k8s/helm/cluster-init"
   name  = "cluster-init"
+  chart = "../../k8s/helm/cluster-init"
 
   depends_on = [
     helm_release.external_secrets_operator
