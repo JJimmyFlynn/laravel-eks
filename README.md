@@ -22,7 +22,7 @@ At a high level it consists of:
 ### Kubernetes
 - All deployed via [Helm](https://helm.sh) charts and [Open Tofu](https://opentofu.org)
 - [AWS Loadbalancer controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/) to provision ALBs for ingress objects
-- [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io) and [AWS Provider](https://github.com/aws/secrets-store-csi-driver-provider-aws) to allow for creation and mounting of secrets pulled from SSM Parameter Store and Secrets Manager
+- [External Secrets Provider](https://external-secrets.io/latest/) to allow for creation and syncing of secrets pulled from SSM Parameter Store and Secrets Manager
 - Service accounts configured with IAM roles to allow for AWS resources access
 - [External DNS](https://kubernetes-sigs.github.io/external-dns/latest/) configured to update Cloudflare records when ingress objects are created
 - Example Laravel application
