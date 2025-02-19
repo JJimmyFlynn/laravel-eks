@@ -343,11 +343,6 @@ resource "aws_iam_role" "cluster" {
   assume_role_policy = data.aws_iam_policy_document.eks_general_assume_role.json
 }
 
-resource "aws_iam_role" "node_group" {
-  name               = "eks-node-group-laravel"
-  assume_role_policy = data.aws_iam_policy_document.ec2_general_assume_role.json
-}
-
 resource "aws_iam_role" "karpenter_node" {
   name               = "karpenter-node-laravel"
   assume_role_policy = data.aws_iam_policy_document.ec2_general_assume_role.json
@@ -378,29 +373,14 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   role       = aws_iam_role.cluster.name
 }
 
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.node_group.name
-}
-
 resource "aws_iam_role_policy_attachment" "karpenter-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.karpenter_node.name
 }
 
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.node_group.name
-}
-
 resource "aws_iam_role_policy_attachment" "karpenter-AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.karpenter_node.name
-}
-
-resource "aws_iam_role_policy_attachment" "laravel-k8s-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.node_group.name
 }
 
 resource "aws_iam_role_policy_attachment" "karpenter-AmazonEC2ContainerRegistryReadOnly" {
