@@ -378,7 +378,7 @@ resource "aws_iam_role_policy_attachment" "karpenter-AmazonEKSWorkerNodePolicy" 
   role       = aws_iam_role.karpenter_node.name
 }
 
-resource "aws_iam_role_policy_attachment" "karpenter-AmazonEKS_CNI_Policy" {
+resource "aws_iam_role_policy_attachment" "karpenter-AmazonEKSCNIPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.karpenter_node.name
 }

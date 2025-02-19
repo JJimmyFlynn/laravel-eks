@@ -1,3 +1,6 @@
+settings:
+    clusterName: ${cluster_name}
+interruptionQueue: ${cluster_name}
 serviceAccount:
   name: karpenter
   annotations:

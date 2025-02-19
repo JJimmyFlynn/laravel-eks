@@ -1,0 +1,12 @@
+domain: ${domain}
+alb_domain: ${alb_domain}
+secrets_provider_controller_service_account:
+    role_arn: ${secrets_provider_controller_service_account_role}
+deployment:
+    images:
+        nginx: ${nginx_image}
+        php_fpm: ${php_fpm_image}
+ingress:
+    loadBalancer:
+        securityGroupIds:
+            - ${alb_security_group_ids}

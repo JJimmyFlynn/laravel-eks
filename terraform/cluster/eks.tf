@@ -26,8 +26,12 @@ resource "aws_eks_cluster" "default" {
 }
 
 /*=========== Node Group ===========*/
+// This node group exists so that Karpenter can provision the resources
+// it needs to begin managing nodes. Karpenter nodes are managed
+// outside this node group.
+// TODO: Configure taints to only allow karpenter resources
 resource "aws_eks_node_group" "app" {
-  node_group_name = "node-group-1"
+  node_group_name = "default-node-group"
   cluster_name    = aws_eks_cluster.default.name
   node_role_arn   = aws_iam_role.karpenter_node.arn
   subnet_ids      = aws_subnet.private.*.id
@@ -46,8 +50,8 @@ resource "aws_eks_node_group" "app" {
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [
-    aws_iam_role_policy_attachment.laravel-k8s-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.laravel-k8s-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.laravel-k8s-AmazonEC2ContainerRegistryReadOnly
+    aws_iam_role_policy_attachment.karpenter-AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.karpenter-AmazonEKSCNIPolicy,
+    aws_iam_role_policy_attachment.karpenter-AmazonEKSWorkerNodePolicy
   ]
 }
