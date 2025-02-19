@@ -9,7 +9,8 @@ service:
   port: 80
   targetPort: 80
 deployment:
-  replicas: 3
+  minReplicas: 3
+  maxReplicas: 8
   images:
     nginx: # REQUIRED
     php_fpm: # REQUIRED

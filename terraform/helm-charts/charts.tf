@@ -1,23 +1,36 @@
+/*========== Metrics Server ==========*/
 resource "helm_release" "metrics_server" {
   name  = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server"
   chart = "metrics-server"
 }
 
-resource "helm_release" "cluster_init" {
-  name  = "cluster-init"
-  chart = "../../k8s/helm/cluster-init"
+/*========== Karpenter ==========*/
+resource "helm_release" "karpenter" {
+  name  = "karpenter"
+  repository = "oci://public.ecr.aws/karpenter"
+  chart = "karpenter"
+  version = "1.2.1"
+  namespace = "kube-system"
 
-  depends_on = [
-    helm_release.external_secrets_operator
+  values = [
+    templatefile("${path.module}/values/karpenter.yaml", {
+      karpenter_controller_role_arn = data.terraform_remote_state.cluster.outputs.karpenter_controller_role_arn
+    })
   ]
 
   set {
-    name  = "load_balancer_controller_service_account.role_arn"
-    value = data.terraform_remote_state.cluster.outputs.alb_controller_role_arn
+    name  = "settings.clusterName"
+    value = data.terraform_remote_state.cluster.outputs.eks_cluster_name
+  }
+
+  set {
+    name  = "interruptionQue"
+    value = data.terraform_remote_state.cluster.outputs.eks_cluster_name
   }
 }
 
+/*========== Load Balancer Controller ==========*/
 resource "helm_release" "aws_load_balancer_controller" {
   name            = "aws-elb-controller"
   repository      = "https://aws.github.io/eks-charts"
@@ -31,7 +44,6 @@ resource "helm_release" "aws_load_balancer_controller" {
   depends_on = [
     helm_release.external_secrets_operator
   ]
-
 
   set {
     name  = "clusterName"
@@ -49,6 +61,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 }
 
+/*========== External Secrets Operator ==========*/
 resource "helm_release" "external_secrets_operator" {
   name  = "external-secrets-operator"
   repository = "https://charts.external-secrets.io"
@@ -56,6 +69,7 @@ resource "helm_release" "external_secrets_operator" {
   namespace = "kube-system"
 }
 
+/*========== External DNS ==========*/
 resource "helm_release" "external_dns" {
   name            = "external-dns"
   repository      = "https://kubernetes-sigs.github.io/external-dns/"
@@ -73,6 +87,22 @@ resource "helm_release" "external_dns" {
   ]
 }
 
+/*========== Cluster Init ==========*/
+resource "helm_release" "cluster_init" {
+  name  = "cluster-init"
+  chart = "../../k8s/helm/cluster-init"
+
+  depends_on = [
+    helm_release.external_secrets_operator
+  ]
+
+  set {
+    name  = "load_balancer_controller_service_account.role_arn"
+    value = data.terraform_remote_state.cluster.outputs.alb_controller_role_arn
+  }
+}
+
+/*========== Laravel Application ==========*/
 resource "helm_release" "laravel_application" {
   name            = "laravel-app"
   chart           = "../../k8s/helm/laravel-app"

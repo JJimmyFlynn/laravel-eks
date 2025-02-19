@@ -6,7 +6,7 @@ metadata:
   labels:
     app: laravel-example
 spec:
-  replicas: {{ .Values.deployment.replicas }}
+  replicas: {{ .Values.deployment.minReplicas }}
   selector:
     matchLabels:
       app: laravel-example

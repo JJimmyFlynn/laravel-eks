@@ -22,6 +22,10 @@ output "secrets_provider_role_arn" {
   value = aws_iam_role.secrets_provider.arn
 }
 
+output "karpenter_controller_role_arn" {
+  value = aws_iam_role.karpenter_controller.arn
+}
+
 output "nginx_image" {
   value = data.aws_ecr_image.laravel_nginx.image_uri
 }

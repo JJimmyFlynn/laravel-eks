@@ -21,6 +21,7 @@ resource "aws_subnet" "private" {
 
   tags = {
     "kubernetes.io/role/internal-elb" = 1
+    "karpenter.sh/discovery" = "laravel-k8s"
   }
 }
 

@@ -29,7 +29,7 @@ resource "aws_eks_cluster" "default" {
 resource "aws_eks_node_group" "app" {
   node_group_name = "node-group-1"
   cluster_name    = aws_eks_cluster.default.name
-  node_role_arn   = aws_iam_role.node_group.arn
+  node_role_arn   = aws_iam_role.karpenter_node.arn
   subnet_ids      = aws_subnet.private.*.id
   instance_types  = ["t3.small"]
 
