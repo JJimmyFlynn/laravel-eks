@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "karpenter_controller_assume_role" {
     }
     condition {
       test     = "StringEquals"
-      values   = ["system:serviceaccount:kube-system:karpenter"]
+      values   = ["system:serviceaccount:karpenter:karpenter"]
       variable = "${aws_iam_openid_connect_provider.default.url}:sub"
     }
   }

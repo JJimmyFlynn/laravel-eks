@@ -11,7 +11,8 @@ resource "helm_release" "karpenter" {
   repository = "oci://public.ecr.aws/karpenter"
   chart = "karpenter"
   version = "1.2.1"
-  namespace = "kube-system"
+  namespace = "karpenter"
+  create_namespace = true
 
   values = [
     templatefile("${path.module}/values/karpenter.yaml", {

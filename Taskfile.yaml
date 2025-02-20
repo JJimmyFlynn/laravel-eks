@@ -10,3 +10,9 @@ tasks:
     cmds:
       - tofu -chdir=terraform/helm-charts destroy -var-file=.tfvars -auto-approve
       - tofu -chdir=terraform/cluster destroy -var-file=.tfvars -auto-approve
+  k8s-up:
+    cmds:
+      - tofu -chdir=terraform/helm-charts apply -var-file=.tfvars -auto-approve
+  k8s-down:
+    cmds:
+      - tofu -chdir=terraform/helm-charts destroy -var-file=.tfvars -auto-approve
