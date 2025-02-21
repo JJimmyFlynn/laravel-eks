@@ -1,0 +1,15 @@
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiFamily: AL2023
+  role: karpenter-node-laravel
+  amiSelectorTerms:
+    - id: ami-0c834fa666e5127b5
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: laravel-k8s
+  subnetSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: laravel-k8s

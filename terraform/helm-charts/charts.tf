@@ -91,7 +91,7 @@ resource "helm_release" "laravel_application" {
       secrets_provider_controller_service_account_role = data.terraform_remote_state.cluster.outputs.secrets_provider_role_arn,
       nginx_image = data.terraform_remote_state.cluster.outputs.nginx_image,
       php_fpm_image = data.terraform_remote_state.cluster.outputs.php_fpm_image
-      alb_security_group_ids = data.terraform_remote_state.cluster.outputs.security_group_allow_cloudfront_inbound_id
+      alb_front_end_security_group_ids = data.terraform_remote_state.cluster.outputs.security_group_allow_cloudfront_inbound_id
     })
   ]
   depends_on = [

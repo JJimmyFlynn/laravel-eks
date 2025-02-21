@@ -15,5 +15,5 @@ deployment:
     nginx: # REQUIRED
     php_fpm: # REQUIRED
 ingress:
-  loadBalancer:
-    securityGroupIds: []
+  load_balancer:
+    front_end_security_group_ids: []

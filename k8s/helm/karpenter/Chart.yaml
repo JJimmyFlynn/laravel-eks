@@ -1,0 +1,6 @@
+apiVersion: v2
+name: karpenter
+description: Initializes karpenter resources for the laravel k8s example project cluster
+type: application
+version: 1.0.0
+appVersion: 1.0.0
