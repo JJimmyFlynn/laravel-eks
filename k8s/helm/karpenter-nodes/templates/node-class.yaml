@@ -6,7 +6,8 @@ spec:
   amiFamily: AL2023
   role: karpenter-node-laravel
   amiSelectorTerms:
-    - id: ami-0c834fa666e5127b5
+    - id: ami-0c834fa666e5127b5 # AMD AMI
+    - id: ami-007e602441b730d63 # ARM AMI
   securityGroupSelectorTerms:
     - tags:
         karpenter.sh/discovery: laravel-k8s

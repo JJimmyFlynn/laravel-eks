@@ -33,6 +33,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./application
+          platforms: linux/arm64, linux/amd64
           file: ${{inputs.DOCKERFILE_PATH}}
           push: true
           tags: |
