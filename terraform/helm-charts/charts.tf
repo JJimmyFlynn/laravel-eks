@@ -1,10 +1,3 @@
-/*========== Metrics Server ==========*/
-resource "helm_release" "metrics_server" {
-  name  = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server"
-  chart = "metrics-server"
-}
-
 /*========== Karpenter ==========*/
 resource "helm_release" "karpenter" {
   name  = "karpenter"
@@ -20,6 +13,21 @@ resource "helm_release" "karpenter" {
       cluster_name = data.terraform_remote_state.cluster.outputs.eks_cluster_name
     })
   ]
+}
+
+resource "helm_release" "karpenter_nodes" {
+  name  = "karpenter-nodes"
+  chart = "../../k8s/helm/karpenter-nodes"
+
+  depends_on = [helm_release.karpenter]
+}
+
+/*========== Metrics Server ==========*/
+resource "helm_release" "metrics_server" {
+  name  = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server"
+  chart = "metrics-server"
+  depends_on = [helm_release.karpenter_nodes]
 }
 
 /*========== Load Balancer Controller ==========*/
@@ -39,6 +47,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   ]
 
   depends_on = [
+    helm_release.karpenter_nodes,
     helm_release.external_secrets_operator
   ]
 }
@@ -49,6 +58,8 @@ resource "helm_release" "external_secrets_operator" {
   repository = "https://charts.external-secrets.io"
   chart = "external-secrets"
   namespace = "kube-system"
+
+  depends_on = [helm_release.karpenter_nodes]
 }
 
 /*========== External DNS ==========*/
@@ -64,7 +75,9 @@ resource "helm_release" "external_dns" {
       secrets_provider_role_arn = data.terraform_remote_state.cluster.outputs.secrets_provider_role_arn
     })
   ]
+
   depends_on = [
+    helm_release.karpenter_nodes,
     helm_release.external_secrets_operator
   ]
 }
@@ -75,6 +88,7 @@ resource "helm_release" "cluster_init" {
   chart = "../../k8s/helm/cluster-init"
 
   depends_on = [
+    helm_release.karpenter_nodes,
     helm_release.external_secrets_operator
   ]
 }
@@ -95,8 +109,8 @@ resource "helm_release" "laravel_application" {
     })
   ]
   depends_on = [
+    helm_release.karpenter_nodes,
     helm_release.cluster_init,
-    helm_release.aws_load_balancer_controller,
-    helm_release.external_secrets_operator
+    helm_release.aws_load_balancer_controller
   ]
 }

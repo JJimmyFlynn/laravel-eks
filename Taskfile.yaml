@@ -5,6 +5,7 @@ tasks:
     cmds:
       - tofu -chdir=terraform/cluster apply -var-file=.tfvars -auto-approve
       - aws eks update-kubeconfig --name laravel-k8s
+      - task tag-sg
       - tofu -chdir=terraform/helm-charts apply -var-file=.tfvars -auto-approve
   down:
     cmds:
@@ -16,3 +17,9 @@ tasks:
   k8s-down:
     cmds:
       - tofu -chdir=terraform/helm-charts destroy -var-file=.tfvars -auto-approve
+  tag-sg:
+    cmds:
+      - |
+        aws ec2 create-tags \
+        --tags "Key=karpenter.sh/discovery,Value=laravel-k8s" \
+        --resources "$(aws eks describe-cluster --name laravel-k8s --query "cluster.resourcesVpcConfig.clusterSecurityGroupId" --output text)"

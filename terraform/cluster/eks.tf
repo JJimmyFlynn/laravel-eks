@@ -15,7 +15,6 @@ resource "aws_eks_cluster" "default" {
     endpoint_private_access = true
     endpoint_public_access  = true
     subnet_ids              = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
-    security_group_ids = [aws_security_group.karpenter_node.id]
   }
 
   # Ensure that IAM Role permissions are created before and deleted

@@ -37,7 +37,3 @@ output "php_fpm_image" {
 output "security_group_allow_cloudfront_inbound_id" {
   value = aws_security_group.allow_cloudfront_inbound.id
 }
-
-output "security_group_karpenter_node_id" {
-  value = aws_security_group.karpenter_node.id
-}
