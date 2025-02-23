@@ -27,11 +27,11 @@ output "karpenter_controller_role_arn" {
 }
 
 output "nginx_image" {
-  value = data.aws_ecr_image.laravel_nginx.image_uri
+  value = aws_ecr_repository.nginx.repository_url
 }
 
 output "php_fpm_image" {
-  value = data.aws_ecr_image.laravel_php_fpm.image_uri
+  value = aws_ecr_repository.php_fpm.repository_url
 }
 
 output "security_group_allow_cloudfront_inbound_id" {
