@@ -1,6 +1,6 @@
 resource "aws_cloudfront_distribution" "default" {
   enabled     = true
-  comment     = "Laravel K8s - Front ALB"
+  comment     = "${var.cluster_name} - Front ALB"
   aliases     = [var.cloudfront_domain]
   price_class = "PriceClass_100" // NA & EU
 

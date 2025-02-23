@@ -8,6 +8,11 @@ variable "role_arn" {
   description = "ARN of the role for terraform to assume"
 }
 
+variable "cluster_name" {
+  type = string
+  description = "Name of the EKS cluster"
+}
+
 variable "cloudfront_domain" {
   type        = string
   description = "Domain alias for the cloudfront distribution. Should match host name of Laravel app"

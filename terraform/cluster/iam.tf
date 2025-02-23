@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "get_ssm_parameters" {
       "ssm:GetParametersByPath"
     ]
 
-    resources = ["arn:aws:ssm:us-east-1:654654165875:parameter/laravel-k8s/*"]
+    resources = ["arn:aws:ssm:us-east-1:654654165875:parameter/${var.cluster_name}/*"]
   }
 }
 
@@ -273,7 +273,7 @@ data "aws_iam_policy_document" "karpenter_controller" {
     condition {
       test     = "StringEquals"
       values = ["owned"]
-      variable = "aws:RequestTag/kubernetes.io/cluster/${aws_eks_cluster.default.name}"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
     }
 
     condition {
@@ -308,7 +308,7 @@ data "aws_iam_policy_document" "karpenter_controller" {
     condition {
       test     = "StringEquals"
       values = ["owned"]
-      variable = "aws:ResourceTag/kubernetes.io/cluster/${aws_eks_cluster.default.name}"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
     }
 
     condition {

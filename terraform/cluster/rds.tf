@@ -6,12 +6,12 @@ data "aws_ssm_parameter" "rds_password" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  name       = "laravel-k8s"
+  name       = var.cluster_name
   subnet_ids = aws_subnet.private.*.id
 }
 
 resource "aws_rds_cluster" "default" {
-  cluster_identifier     = "laravel-k8s"
+  cluster_identifier     = var.cluster_name
   engine                 = "aurora-mysql"
   engine_version         = "8.0"
   engine_mode            = "provisioned"
@@ -30,7 +30,7 @@ resource "aws_rds_cluster" "default" {
 }
 
 resource "aws_rds_cluster_instance" "default" {
-  identifier           = "laravel-k8s-writer"
+  identifier           = "${var.cluster_name}-writer"
   count                = var.aurora_instance_count
   cluster_identifier   = aws_rds_cluster.default.id
   engine               = aws_rds_cluster.default.engine
@@ -43,7 +43,7 @@ resource "aws_rds_cluster_instance" "default" {
 # Security Group
 resource "aws_security_group" "rds_allow_vpc" {
   vpc_id      = aws_vpc.default.id
-  name        = "rds-laravel-k8s"
+  name        = "rds-${var.cluster_name}"
   description = "Allow inbound traffic from local VPC"
 }
 

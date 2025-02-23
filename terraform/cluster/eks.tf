@@ -1,6 +1,6 @@
 /*=========== EKS Cluster ===========*/
 resource "aws_eks_cluster" "default" {
-  name                          = "laravel-k8s"
+  name                          = var.cluster_name
   role_arn                      = aws_iam_role.cluster.arn
   bootstrap_self_managed_addons = true
   version                       = "1.32"
@@ -30,7 +30,6 @@ resource "aws_eks_cluster" "default" {
 // This node group exists so that Karpenter can provision the resources
 // it needs to begin managing nodes. Karpenter nodes are managed
 // outside this node group.
-// TODO: Configure taints to only allow karpenter resources
 resource "aws_eks_node_group" "critical" {
   node_group_name = "critical-services"
   cluster_name    = aws_eks_cluster.default.name
@@ -38,6 +37,7 @@ resource "aws_eks_node_group" "critical" {
   subnet_ids      = aws_subnet.private.*.id
   instance_types  = ["t3.medium"]
 
+  // Allows only coredns and karpenter pods
   taint {
     effect = "NO_SCHEDULE"
     key    = "CriticalAddonsOnly"
