@@ -21,6 +21,7 @@ At a high level it consists of:
 - CloudWatch for EKS control plane node logs
 ### Kubernetes
 - All deployed via [Helm](https://helm.sh) charts and [Open Tofu](https://opentofu.org)
+- [Karpenter](https://karpenter.sh) to scale nodes
 - [AWS Loadbalancer controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/) to provision ALBs for ingress objects
 - [External Secrets Provider](https://external-secrets.io/latest/) to allow for creation and syncing of secrets pulled from SSM Parameter Store and Secrets Manager
 - Service accounts configured with IAM roles to allow for AWS resources access
