@@ -28,6 +28,6 @@ At a high level it consists of:
 - [External DNS](https://kubernetes-sigs.github.io/external-dns/latest/) configured to update Cloudflare records when ingress objects are created
 - Example Laravel application
   - Served via Nginx and PHP-fpm
-  - Pulls its environment variables from SSM Parameter Store via the Secrets Store CSI Driver
+  - Pulls its environment variables from SSM Parameter Store via the External Secrets Store Provider
 ### CI/CD
 - Container images are built via Github actions and pushed to an ECR registry
