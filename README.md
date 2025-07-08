@@ -1,5 +1,5 @@
-> [!Note]
-> Documentation and project are works in progress
+> [!Warning]
+> For demonstration purposes only
 
 ## EKS with Laravel App
 This is an example infrastructure and deployment for a Laravel application on AWS EKS.
